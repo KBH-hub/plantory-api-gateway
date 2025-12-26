@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: plantoryApigateway-service
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id : member-service
+              uri : lb://MEMBER-SERVICE # 끌어다 쓰는게 대문자라 매칭되게 대문자로 맞춰두면 편하다.
+              predicates:
+                - Path=/member-service/**
+              filters:
+                - RewritePath=/member-service/(?<path>.*), /${path}
+                - RemoveRequestHeader=Cookie
+                - RemoveResponseHeader=Set-Cookie
+server:
+  port: 9888
