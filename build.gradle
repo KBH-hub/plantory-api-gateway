@@ -43,9 +43,6 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // ===== OpenAPI/Swagger (필요할 때만) =====
-    // WebMVC용이 아니라 WebFlux용을 써야 함
-    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.14"
     // ===== Dev/Test =====
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
