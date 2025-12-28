@@ -5,12 +5,10 @@ spring:
   application:
     name: plantory-api-gateway
 
-  cloud:
-    gateway:
-      server:
-        webflux:
-          routes:
-            - id: member-service
-              uri: ${MEMBER_SERVICE_URI:http://localhost:9001}
-              predicates:
-                - Path=/api/**
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:9888}"
+
+services:
+  member:
+    base-url: ${MEMBER_SERVICE_URI:http://localhost:9001}
+
