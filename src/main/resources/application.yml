@@ -1,52 +1,16 @@
+server:
+  port: 9072
+
 spring:
   application:
     name: plantory-api-gateway
+
   cloud:
     gateway:
       server:
         webflux:
-          default-filters:
-            - RemoveRequestHeader=Authorization
-            - RemoveRequestHeader=Cookie
-
           routes:
             - id: member-service
-              uri: lb://member-service
+              uri: ${MEMBER_SERVICE_URI:http://localhost:9001}
               predicates:
-                - Path=/member/**
-              filters:
-                - StripPrefix=1
-
-            - id: admin-service
-              uri: lb://admin-service
-              predicates:
-                - Path=/admin/**
-              filters:
-                - StripPrefix=1
-
-            - id: plant-service
-              uri: lb://plant-service
-              predicates:
-                - Path=/plant/**
-              filters:
-                - StripPrefix=1
-
-            - id: community-service
-              uri: lb://community-service
-              predicates:
-                - Path=/community/**
-              filters:
-                - StripPrefix=1
-server:
-  port: 9072
-security:
-  whitelist:
-    - /swagger-ui/**
-    - /v3/api-docs/**
-    - /actuator/**
-    - /member-service/api/auth/**
-    - /member-service/api/members/signup
-
-
-
-
+                - Path=/api/**
