@@ -1,18 +1,61 @@
+server:
+  port: 9072
+
 spring:
   application:
     name: plantoryApigateway-service
+
+  config:
+    import: "optional:configserver:http://localhost:9888"
+
+
   cloud:
     gateway:
       server:
         webflux:
+          default-filters:
+            - RemoveRequestHeader=X-User-Id
+            - RemoveRequestHeader=X-Roles
+
           routes:
-            - id : member-service
-              uri : lb://MEMBER-SERVICE # 끌어다 쓰는게 대문자라 매칭되게 대문자로 맞춰두면 편하다.
+            - id: member-service
+              uri: lb://MEMBER-SERVICE
               predicates:
                 - Path=/member-service/**
               filters:
-                - RewritePath=/member-service/(?<path>.*), /${path}
-                - RemoveRequestHeader=Cookie
-                - RemoveResponseHeader=Set-Cookie
-server:
-  port: 9888
+                - StripPrefix=1
+
+            - id: admin-service
+              uri: lb://ADMIN-SERVICE
+              predicates:
+                - Path=/admin-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: plant-service
+              uri: lb://PLANT-SERVICE
+              predicates:
+                - Path=/plant-service/**
+              filters:
+                - StripPrefix=1
+
+            - id: community-service
+              uri: lb://COMMUNITY-SERVICE
+              predicates:
+                - Path=/community-service/**
+              filters:
+                - StripPrefix=1
+
+jwt:
+  secret: ${JWT_SECRET}
+
+security:
+  whitelist:
+    - /actuator/**
+    - /member-service/auth/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,refresh
