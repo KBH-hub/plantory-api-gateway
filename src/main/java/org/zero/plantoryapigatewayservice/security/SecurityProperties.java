@@ -12,4 +12,3 @@ public class SecurityProperties {
     public List<String> getWhitelist() { return whitelist; }
     public void setWhitelist(List<String> whitelist) { this.whitelist = whitelist; }
 }
-

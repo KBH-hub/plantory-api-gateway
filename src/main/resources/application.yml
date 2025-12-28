@@ -1,13 +1,6 @@
-server:
-  port: 9072
-
 spring:
   application:
-    name: plantoryApigateway-service
-
-  config:
-    import: "optional:configserver:http://localhost:9888"
-
+    name: plantory-api-gateway
 
   cloud:
     gateway:
@@ -19,43 +12,29 @@ spring:
 
           routes:
             - id: member-service
-              uri: lb://MEMBER-SERVICE
+              uri: lb://member-service
               predicates:
-                - Path=/member-service/**
+                - Path=/member/**
               filters:
                 - StripPrefix=1
 
             - id: admin-service
-              uri: lb://ADMIN-SERVICE
+              uri: lb://admin-service
               predicates:
-                - Path=/admin-service/**
+                - Path=/admin/**
               filters:
                 - StripPrefix=1
 
             - id: plant-service
-              uri: lb://PLANT-SERVICE
+              uri: lb://plant-service
               predicates:
-                - Path=/plant-service/**
+                - Path=/plant/**
               filters:
                 - StripPrefix=1
 
             - id: community-service
-              uri: lb://COMMUNITY-SERVICE
+              uri: lb://community-service
               predicates:
-                - Path=/community-service/**
+                - Path=/community/**
               filters:
                 - StripPrefix=1
-
-jwt:
-  secret: ${JWT_SECRET}
-
-security:
-  whitelist:
-    - /actuator/**
-    - /member-service/auth/**
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,env,refresh
