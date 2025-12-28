@@ -6,8 +6,8 @@ spring:
       server:
         webflux:
           default-filters:
-            - RemoveRequestHeader=X-User-Id
-            - RemoveRequestHeader=X-Roles
+            - RemoveRequestHeader=Authorization
+            - RemoveRequestHeader=Cookie
 
           routes:
             - id: member-service
@@ -39,3 +39,14 @@ spring:
                 - StripPrefix=1
 server:
   port: 9072
+security:
+  whitelist:
+    - /swagger-ui/**
+    - /v3/api-docs/**
+    - /actuator/**
+    - /member-service/api/auth/**
+    - /member-service/api/members/signup
+
+
+
+
