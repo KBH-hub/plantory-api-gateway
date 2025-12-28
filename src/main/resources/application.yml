@@ -1,7 +1,6 @@
 spring:
   application:
     name: plantory-api-gateway
-
   cloud:
     gateway:
       server:
@@ -38,3 +37,5 @@ spring:
                 - Path=/community/**
               filters:
                 - StripPrefix=1
+server:
+  port: 9072
