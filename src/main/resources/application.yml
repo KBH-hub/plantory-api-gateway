@@ -8,7 +8,36 @@ spring:
   config:
     import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:9888}"
 
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            add-to-simple-url-handler-mapping: true
+            cors-configurations:
+              '[/**]':
+                allowed-origins:
+                  - "http://localhost:5173"
+                  - "http://192.168.56.1:5173"
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowed-headers: "*"
+                exposed-headers:
+                  - Authorization
+                  - Set-Cookie
+                  - X-GW-Blocked-By
+                allow-credentials: true
+
 services:
   member:
     base-url: ${MEMBER_SERVICE_URI:http://localhost:9001}
 
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:9761/eureka}

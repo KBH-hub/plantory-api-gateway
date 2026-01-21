@@ -61,27 +61,36 @@ public class AuthenticationGlobalFilter implements GlobalFilter, Ordered {
                 .flatMap(stopped -> {
                     if (stopped) {
                         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                        exchange.getResponse().getHeaders().add("X-GW-Blocked-By", "stopped-check");
                         return exchange.getResponse().setComplete();
                     }
 
                     ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                             .headers(h -> {
-                                // 항상 gateway가 덮어쓴다
-                                h.remove("X-Auth-UserId");
-                                h.add("X-Auth-UserId", String.valueOf(authInfo.getMemberId()));
+                                h.set("X-Auth-UserId", String.valueOf(authInfo.getMemberId()));
 
                                 h.remove("X-Auth-Roles");
                                 if (authInfo.getRoles() != null && !authInfo.getRoles().isEmpty()) {
-                                    h.add("X-Auth-Roles", String.join(",", authInfo.getRoles()));
-                                }
+                                    String rolesHeader = authInfo.getRoles().stream()
+                                            .filter(r -> r != null && !r.isBlank())
+                                            .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
+                                            .distinct()
+                                            .reduce((a, b) -> a + "," + b)
+                                            .orElse(null);
 
-                                // 선택: Authorization은 downstream이 안 보게 제거해도 됨
-                                // h.remove("Authorization");
+                                    if (rolesHeader != null) h.set("X-Auth-Roles", rolesHeader);
+                                }
                             })
                             .build();
 
                     return chain.filter(exchange.mutate().request(mutatedRequest).build());
+                })
+                .onErrorResume(e -> {
+                    exchange.getResponse().setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
+                    exchange.getResponse().getHeaders().add("X-GW-Blocked-By", "member-status-error");
+                    return exchange.getResponse().setComplete();
                 });
+
     }
 
     private boolean isWhitelisted(String path) {
